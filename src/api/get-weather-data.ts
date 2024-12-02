@@ -1,3 +1,5 @@
+import logger from "../helper/logger.helper";
+
 export interface GetWeatherDataOptions {
   units?: string;
   lang?: string;
@@ -23,7 +25,8 @@ class GetWeatherData {
       const data = await response.json();
       return data;
     } catch (error) {
-      
+      logger.error('Error getting weather data', error);
+      throw error;
     }
   }
 }
