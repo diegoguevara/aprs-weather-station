@@ -1,0 +1,27 @@
+{
+  "name": "aprs-weather-station",
+  "version": "1.0.0",
+  "description": "A simple weather station using NodeJS and OpenWeather API.",
+  "scripts": {
+    "start": "node -r dotenv/config dist/index.js",
+    "dev": "ts-node -r dotenv/config src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [
+    "aprs",
+    "weather",
+    "station",
+    "node",
+    "openweather"
+  ],
+  "author": "Diego Guevara",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
