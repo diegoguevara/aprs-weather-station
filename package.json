@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node -r dotenv/config dist/index.js",
     "dev": "ts-node -r dotenv/config src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "postinstall": "npm run build"
   },
   "keywords": [
     "aprs",
