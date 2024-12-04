@@ -1,5 +1,6 @@
 import WeatherData from "./weater-data/openweathermap";
 import WeatherDataAdapter from "./adapters/openweathermap/weather-data.adapter";
+import logger from "./helper/logger.helper";
 
 // const callsign = process.env.HJ3DAG;
 // const ssid = process.env.SSID;
@@ -20,7 +21,7 @@ import WeatherDataAdapter from "./adapters/openweathermap/weather-data.adapter";
     console.log(aprsWeatherData);
     // console.log(weatherData);
   } catch (error) {
-    // try again
-    console.log('try again...');
+    const err = (error as Error);
+    logger.error(err.message);
   }
 })();
