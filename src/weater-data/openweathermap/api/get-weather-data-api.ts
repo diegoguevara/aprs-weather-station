@@ -5,6 +5,9 @@ export interface GetWeatherDataOptions {
   lang?: string;
 }
 
+// OpenWeather API URL
+const API_URL = "https://api.openweathermap.org/data/3.0/onecall";
+
 class GetWeatherDataApi {
   constructor(
     private readonly apiKey: string,
@@ -19,7 +22,8 @@ class GetWeatherDataApi {
   
       const key = this.apiKey;
       const { units = "imperial", lang = "en" } = this.options;
-      const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${key}&units=${units}&lang=${lang}&dt=${Date.now()}`;
+      // const url = `${API_URL}?lat=${lat}&lon=${lon}&appid=${key}&units=${units}&lang=${lang}&dt=${Date.now()}`; 
+      const url = `${API_URL}?lat=${lat}&lon=${lon}&appid=${key}&units=${units}&lang=${lang}`;
   
       const response = await fetch(url);
       const data = await response.json();
