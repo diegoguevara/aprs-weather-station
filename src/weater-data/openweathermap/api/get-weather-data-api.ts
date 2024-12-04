@@ -1,11 +1,11 @@
-import logger from "../helper/logger.helper";
+import logger from "../../../helper/logger.helper";
 
 export interface GetWeatherDataOptions {
   units?: string;
   lang?: string;
 }
 
-class GetWeatherData {
+class GetWeatherDataApi {
   constructor(
     private readonly apiKey: string,
     private readonly options: GetWeatherDataOptions
@@ -31,4 +31,4 @@ class GetWeatherData {
   }
 }
 
-export default GetWeatherData;
+export default GetWeatherDataApi;
