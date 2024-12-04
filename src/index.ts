@@ -14,8 +14,13 @@ import WeatherDataAdapter from "./adapters/openweathermap/weather-data.adapter";
 // if any error log it and try again
 
 (async () => {
-  const weatherData = await WeatherData.getWeatherData();
-  const aprsWeatherData = WeatherDataAdapter.getAprsData(weatherData);
-  console.log(aprsWeatherData);
-  // console.log(weatherData);
+  try {
+    const weatherData = await WeatherData.getWeatherData();
+    const aprsWeatherData = WeatherDataAdapter.getAprsData(weatherData);
+    console.log(aprsWeatherData);
+    // console.log(weatherData);
+  } catch (error) {
+    // try again
+    console.log('try again...');
+  }
 })();
