@@ -1,4 +1,4 @@
-import { AprsWeatherDataType } from "../../aprs-client/types/aprs-weather-data.type";
+import { AprsWeatherDataType } from "../../aprs-packet/types/aprs-weather-data.type";
 import { OWData } from "../../weater-data/openweathermap/types/openweather-data.type";
 import logger from "../../helper/logger.helper";
 

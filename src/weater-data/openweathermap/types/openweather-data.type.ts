@@ -22,7 +22,7 @@ export interface OWDataItem {
   wind_gust: number;
   pop: number;
   rain: {
-    "1h": number;
+    '1h': number;
   };
   weather: [OWDataItemWeather];
 }
@@ -49,7 +49,7 @@ export interface OWData {
   current: OWDataItem;
   hourly: [OWDataItem];
   daily: [
-    OWDataDailyItem
+    OWDataDailyItem,
     // {
     //   dt: 1731969056,
     //   sunrise: 1731926692,
