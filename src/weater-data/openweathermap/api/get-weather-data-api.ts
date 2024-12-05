@@ -23,6 +23,7 @@ class GetWeatherDataApi {
     try {
       const key = this.apiKey;
       const { units = 'imperial', lang = 'en' } = this.options;
+      // const url = `${API_URL}?lat=${lat}&lon=${lon}&appid=${key}&units=${units}&lang=${lang}&dt=${Date.now()}`;
       const url = `${API_URL}?lat=${lat}&lon=${lon}&appid=${key}&units=${units}&lang=${lang}`;
 
       const response = await fetch(url);

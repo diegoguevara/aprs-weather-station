@@ -5,6 +5,26 @@ export interface OWDataItemWeather {
   icon: string;
 }
 
+export interface OWDataHourlyItem {
+  dt: number;
+  temp: number;
+  feels_like: number;
+  pressure: number;
+  humidity: number;
+  dew_point: number;
+  uvi: number;
+  clouds: number;
+  visibility: number;
+  wind_speed: number;
+  wind_deg: number;
+  wind_gust: number;
+  weather: [OWDataItemWeather];
+  pop: number;
+  rain: {
+    '1h': number;
+  };
+}
+
 export interface OWDataItem {
   dt: number;
   sunrise: number;
@@ -47,7 +67,7 @@ export interface OWDataDailyItem {
 
 export interface OWData {
   current: OWDataItem;
-  hourly: [OWDataItem];
+  hourly: [OWDataHourlyItem];
   daily: [
     OWDataDailyItem,
     // {

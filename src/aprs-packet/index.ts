@@ -1,1 +1,2 @@
-export { default as BuildPacket } from './service/build-packet';
+export { default as WeatherPacket } from './service/weather-packet';
+export { default as MessagePacket } from './service/message-packet';
