@@ -54,7 +54,7 @@ class WeatherDataAdapter {
       const weather = weatherData.current?.weather?.[0].description ?? '';
       const windSpeed = Math.round(weatherData.current.wind_speed ?? 0); // en millas náuticas por hora
       const windGust = Math.round(weatherData.current.wind_gust ?? 0); // ráfaga máxima de viento
-      const temperature = this.oneDecimal(weatherData.current.temp ?? 0); // en grados Fahrenheit
+      const temperature = Math.round(weatherData.current.temp ?? 0); // en grados Fahrenheit
       const rainfallLastHour = Math.round(rainfallLastHourAcc); // en 1/100 pulgadas
       const rainfall24Hours = this.oneDecimal(rainfall24HoursAcc); // en 1/100 pulgadas
       const rainfallSinceMidnight = Math.round(rainfallSinceMidnightAcc); // en 1/100 pulgadas

@@ -4,6 +4,7 @@ import AprsConnection from './aprs-packet/service/connect';
 import SendPacket from './aprs-packet/service/send-packet';
 import WeatherData from './weater-data/openweathermap';
 import WeatherDataAdapter from './adapters/openweathermap/weather-data.adapter';
+import dayjs from 'dayjs';
 import logger from './helper/logger.helper';
 
 const callsign = process.env.CALLSIGN ?? '';
@@ -33,6 +34,8 @@ async function main() {
 
     const t = (aprsWeatherData.temperature - 32) * (5 / 9);
     const temperature = parseFloat(t.toFixed(1));
+    console.log('temperature', temperature);
+    console.log('weatherData', aprsWeatherData.temperature);
 
     // build aprs weather packet
     const weatherPacket = WeatherPacket.build({
@@ -68,6 +71,8 @@ async function main() {
       console.log(`Received: ${data}`);
     });
 
+    await waitOneSecond();
+
     if (weatherPacket) {
       await SendPacket.send(aprsConn, weatherPacket);
     }
@@ -76,10 +81,18 @@ async function main() {
     }
 
     aprsConn.end();
+    console.log(aprsWeatherData);
+    console.log('last report', dayjs().format('MM.D, h:mm:ss a'));
   } catch (error) {
     const err = error as Error;
     logger.error(err.message);
   }
+}
+
+function waitOneSecond(): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 2000);
+  });
 }
 
 (() => {

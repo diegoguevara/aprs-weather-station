@@ -53,6 +53,10 @@ class WeatherPacket {
       //   `${windDir}/${windSpd}g${windGst}t${temp}r${rainLastHour}p${rain24Hrs}P${rainMidnight}` +
       //   `h${humid}b${baroPressure}${comment}`;
 
+      // const aprsMessage =
+      //   `${paddedCallsign}>APRS,TCPIP*:!${latString}${symbolTable}${lonString}${symbolCode}` +
+      //   `${windDir}/${windSpd}g${windGst}t${temp}r${rainLastHour}` +
+      //   `h${humid}b${baroPressure}${comment}`;
       const aprsMessage =
         `${paddedCallsign}>APRS,TCPIP*:!${latString}${symbolTable}${lonString}${symbolCode}` +
         `${windDir}/${windSpd}g${windGst}t${temp}r${rainLastHour}` +
