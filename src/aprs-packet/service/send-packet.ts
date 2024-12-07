@@ -1,9 +1,10 @@
+import type net from 'net';
 class SendPacket {
   constructor() {}
 
-  static async send(packet: string) {
+  static async send(conn: net.Socket, packet: string) {
     try {
-      console.log(packet);
+      conn.write(`${packet}\n`);
     } catch (error) {
       console.log(error);
     }

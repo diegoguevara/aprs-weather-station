@@ -39,8 +39,8 @@ class WeatherDataAdapter {
           // itemDate.isToday()
         ) {
           if (itm.pop! > 0.2 && itm.rain?.['1h']) {
-            console.log('pop', itm.pop);
-            console.log('rain', itm.rain?.['1h']);
+            // console.log('pop', itm.pop);
+            // console.log('rain', itm.rain?.['1h']);
             if (!nextRainItem) {
               nextRainItem = itm;
             }
@@ -48,7 +48,7 @@ class WeatherDataAdapter {
         }
       });
 
-      console.log('nextRainItem', nextRainItem);
+      console.log('nextRainItem', weatherData.current.temp);
 
       const windDirection = Math.round(weatherData.current.wind_deg ?? 0); // en grados (0-360)
       const weather = weatherData.current?.weather?.[0].description ?? '';
@@ -84,12 +84,12 @@ class WeatherDataAdapter {
         windDirection,
         windSpeed,
         windGust,
-        temperature,
+        temperature: temperature,
         rainfallLastHour,
         rainfall24Hours,
         rainfallSinceMidnight,
         humidity,
-        pressure,
+        pressure: pressure * 10,
         uvi,
         clouds,
         visibility,
