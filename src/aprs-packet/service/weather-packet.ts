@@ -23,8 +23,8 @@ class WeatherPacket {
         windGust = 0, // ráfaga máxima de viento
         temperature = 0, // en grados Fahrenheit
         rainfallLastHour = 0, // en 1/100 pulgadas
-        rainfall24Hours = 0, // en 1/100 pulgadas
-        rainfallSinceMidnight = 0, // en 1/100 pulgadas
+        // rainfall24Hours = 0, // en 1/100 pulgadas
+        // rainfallSinceMidnight = 0, // en 1/100 pulgadas
         humidity = 0, // en porcentaje
         pressure = 0, // en décimas de milibares
       } = weatherData;
@@ -41,22 +41,22 @@ class WeatherPacket {
       const windGst = String(windGust).padStart(3, '0');
       const temp = String(temperature).padStart(3, '0');
       const rainLastHour = String(rainfallLastHour).padStart(3, '0');
-      const rain24Hrs = String(rainfall24Hours).padStart(3, '0');
-      const rainMidnight = String(rainfallSinceMidnight).padStart(3, '0');
+      // const rain24Hrs = String(rainfall24Hours).padStart(3, '0');
+      // const rainMidnight = String(rainfallSinceMidnight).padStart(3, '0');
       const humid = String(humidity).padStart(2, '0');
       const baroPressure = String(pressure).padStart(5, '0');
 
       const { latString, lonString } = this.latLonToAprs(lat, lon);
 
-      const aprsMessage =
-        `${paddedCallsign}>APRS,TCPIP*:!${latString}${symbolTable}${lonString}${symbolCode}` +
-        `${windDir}/${windSpd}g${windGst}t${temp}r${rainLastHour}p${rain24Hrs}P${rainMidnight}` +
-        `h${humid}b${baroPressure}${comment}`;
-
       // const aprsMessage =
       //   `${paddedCallsign}>APRS,TCPIP*:!${latString}${symbolTable}${lonString}${symbolCode}` +
-      //   `${windDir}/${windSpd}g${windGst}t${temp}r${rainLastHour}` +
+      //   `${windDir}/${windSpd}g${windGst}t${temp}r${rainLastHour}p${rain24Hrs}P${rainMidnight}` +
       //   `h${humid}b${baroPressure}${comment}`;
+
+      const aprsMessage =
+        `${paddedCallsign}>APRS,TCPIP*:!${latString}${symbolTable}${lonString}${symbolCode}` +
+        `${windDir}/${windSpd}g${windGst}t${temp}r${rainLastHour}` +
+        `h${humid}b${baroPressure}${comment}`;
 
       return aprsMessage;
     } catch (error) {

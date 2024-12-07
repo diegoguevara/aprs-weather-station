@@ -22,69 +22,33 @@ class WeatherDataAdapter {
         (a: { dt: number }, b: { dt: number }) => a.dt - b.dt,
       );
 
-      let rainfallLastHourAcc = 0;
-      let rainfall24HoursAcc = 0;
-      let rainfallSinceMidnightAcc = 0;
+      const rainfallLastHourAcc = 0;
+      const rainfall24HoursAcc = 0;
+      const rainfallSinceMidnightAcc = 0;
 
-      const currItem: Partial<OWDataItem>[] = [{ dt: 0, pop: 0 } as OWDataItem];
+      let nextRainItem: Partial<OWDataItem> | undefined = undefined;
+      // const nextRainItem: Partial<OWDataItem>[] = [
+      //   { dt: 0, pop: 0 } as OWDataItem,
+      // ];
 
       orderedItems.forEach((itm: OWDataHourlyItem) => {
         const itemDate = dayjs.unix(itm.dt).tz('America/Bogota');
-        rainfall24HoursAcc = rainfall24HoursAcc + (itm.rain?.['1h'] ?? 0);
-        console.log(
-          dayjs
-            .unix(itm.dt ?? 0)
-            .tz('America/Bogota')
-            .local()
-            .format(),
-        );
-        console.log(itm.rain?.['1h'] ?? 0);
-
-        if (itemDate.isBefore(dayjs().tz('America/Bogota'))) {
-          if (
-            itemDate.isAfter(dayjs().tz('America/Bogota').subtract(2, 'hour'))
-          ) {
-            rainfallLastHourAcc = rainfallLastHourAcc + (itm.rain?.['1h'] ?? 0);
+        if (
+          itemDate.isAfter(dayjs().tz('America/Bogota').subtract(1, 'hour'))
+          // itemDate.isAfter(dayjs().tz('America/Bogota').subtract(1, 'hour')) &&
+          // itemDate.isToday()
+        ) {
+          if (itm.pop! > 0.2 && itm.rain?.['1h']) {
+            console.log('pop', itm.pop);
+            console.log('rain', itm.rain?.['1h']);
+            if (!nextRainItem) {
+              nextRainItem = itm;
+            }
           }
-          rainfallSinceMidnightAcc =
-            rainfallSinceMidnightAcc + (itm.rain?.['1h'] ?? 0);
         }
-
-        if (itemDate.isToday()) {
-          currItem.push(itm);
-          // console.log(
-          //   dayjs
-          //     .unix(itm.dt ?? 0)
-          //     .tz('America/Bogota')
-          //     .local()
-          //     .format(),
-          //   // .toString(),
-          // );
-        }
-        // if (
-        //   itm.pop !== undefined &&
-        //   itm.pop > (currItem?.pop ?? 0) &&
-        //   itemDate.isToday()
-        // ) {
-        //   currItem = itm;
-        // }
       });
 
-      console.log('rainfallLastHourAcc', rainfallLastHourAcc);
-      console.log('rainfall24Hours', rainfall24HoursAcc);
-      console.log('rainfallSinceMidnightAcc', rainfallSinceMidnightAcc);
-
-      // // console.log(currItem);
-      // console.log(
-      //   dayjs
-      //     .unix(currItem?.[0].dt ?? 0)
-      //     .tz('America/Bogota')
-      //     .toString(),
-      // );
-
-      // const dd = weatherData.hourly[0];
-      // console.log(dd.dt);
-      // console.log(weatherData.hourly[0]);
+      console.log('nextRainItem', nextRainItem);
 
       const windDirection = Math.round(weatherData.current.wind_deg ?? 0); // en grados (0-360)
       const weather = weatherData.current?.weather?.[0].description ?? '';
@@ -100,7 +64,21 @@ class WeatherDataAdapter {
       const clouds = Math.round(weatherData.current.clouds ?? 0); // en porcentaje
       const visibility = Math.round(weatherData.current.visibility ?? 0); // en millas nauticas
       const weatherDesc = weather;
-      const rainDesc = weatherData.daily[0].weather[0].description;
+      // const rainDesc = weatherData.daily[0].weather[0].description;
+      let rainDesc = '';
+      if (nextRainItem) {
+        rainDesc = '- ';
+        rainDesc += (nextRainItem as OWDataItem).weather?.[0].description ?? '';
+        const dd = nextRainItem as OWDataItem;
+        const rainTime = dayjs.unix(dd?.dt ?? 0).tz('America/Bogota');
+        if (rainTime.isToday()) {
+          rainDesc += ' hoy ';
+        } else {
+          rainDesc += ' mañana ';
+        }
+        rainDesc += rainTime.format('h:mma');
+        rainDesc += ` (~${dd.rain?.['1h']}mm/h)`;
+      }
 
       return {
         windDirection,
