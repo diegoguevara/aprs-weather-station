@@ -1,6 +1,11 @@
 import { latLonToAprs } from '../../utils/lat-lon';
 import logger from '../../utils/logger';
 
+/**
+ * Builds an APRS status/message packet.
+ * If lat/lon are provided, sends a position packet with the comment.
+ * Otherwise, sends a status-only packet.
+ */
 export function buildMessagePacket({
   callsign,
   ssid,

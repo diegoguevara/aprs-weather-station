@@ -15,8 +15,14 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isToday);
 
+/** Conversion factor: multiply mm by this to get hundredths of an inch (APRS rainfall unit). */
 const MM_TO_HUNDREDTHS_INCH = 100 / 25.4;
 
+/**
+ * Strips non-ASCII characters from text for APRS compatibility.
+ * Uses NFD normalization to remove diacritics (e.g., "á" -> "a")
+ * and drops any remaining non-printable-ASCII characters.
+ */
 function toAscii(text: string): string {
   return text
     .normalize('NFD')
@@ -30,6 +36,11 @@ function oneDecimal(value: number): number {
   return parseFloat(value.toFixed(1));
 }
 
+/**
+ * Transforms OpenWeatherMap API data into APRS weather data format.
+ * Converts units (mm -> hundredths of inch), accumulates rainfall from hourly buckets,
+ * and builds a next-rain forecast description for the APRS comment field.
+ */
 export function transformToAprsData(
   weatherData: OWData,
   tz: string,

@@ -14,6 +14,11 @@ interface AprsConnectionConfig {
 const RECONNECT_INTERVAL = 30000;
 const CONNECTION_TIMEOUT = 15000;
 
+/**
+ * Manages a persistent TCP connection to an APRS-IS server.
+ * Handles login verification (waits for "logresp" from server),
+ * automatic reconnection on disconnect, and connection timeouts.
+ */
 export default class AprsConnection {
   private client: net.Socket | null = null;
   private connected = false;
@@ -23,6 +28,7 @@ export default class AprsConnection {
 
   constructor(private readonly params: AprsConnectionConfig) {}
 
+  /** Opens a TCP connection and authenticates with the APRS-IS server. Resolves once login is verified. */
   async connect(): Promise<void> {
     if (this.connected || this.connecting) return;
     this.connecting = true;
@@ -116,6 +122,7 @@ export default class AprsConnection {
     });
   }
 
+  /** Sends a raw APRS packet string to the server. Silently skips if not connected. */
   send(packet: string): void {
     if (!this.connected || !this.client) {
       logger.warn('Cannot send packet: not connected');
@@ -128,6 +135,7 @@ export default class AprsConnection {
     }
   }
 
+  /** Closes the connection and prevents auto-reconnect. */
   disconnect(): void {
     this.intentionalClose = true;
     if (this.reconnectTimer) {
@@ -146,6 +154,7 @@ export default class AprsConnection {
     return this.connected;
   }
 
+  /** Schedules a reconnection attempt after RECONNECT_INTERVAL ms. On failure, the close event re-triggers this. */
   private scheduleReconnect(): void {
     if (this.reconnectTimer || this.intentionalClose) return;
     logger.info(`Reconnecting in ${RECONNECT_INTERVAL / 1000}s...`);

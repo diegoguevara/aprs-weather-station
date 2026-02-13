@@ -2,6 +2,11 @@ import { AprsWeatherDataType } from '../types/aprs-weather-data.type';
 import { latLonToAprs } from '../../utils/lat-lon';
 import logger from '../../utils/logger';
 
+/**
+ * Builds an APRS weather report packet string.
+ * Format: CALL>APRS,TCPIP*:!LAT/LON_DIR/SPDgGSTtTMPrRNpR24PRMDhHUMbPRES
+ * See APRS Protocol Reference Chapter 12 for field definitions.
+ */
 export function buildWeatherPacket({
   callsign,
   ssid,

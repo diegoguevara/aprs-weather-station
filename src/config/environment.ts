@@ -1,3 +1,4 @@
+/** Reads a required env var or throws if missing. */
 function requireEnv(name: string): string {
   const value = process.env[name];
   if (!value) {
@@ -6,6 +7,7 @@ function requireEnv(name: string): string {
   return value;
 }
 
+/** Reads a required env var and parses it as a number. Throws if missing or not numeric. */
 function requireEnvNumber(name: string): number {
   const value = Number(requireEnv(name));
   if (isNaN(value)) {
@@ -14,6 +16,7 @@ function requireEnvNumber(name: string): number {
   return value;
 }
 
+/** Reads an optional env var as a number, returning defaultValue if unset. Throws if set but not numeric. */
 function optionalEnvNumber(name: string, defaultValue: number): number {
   const raw = process.env[name];
   if (!raw) return defaultValue;
@@ -24,6 +27,7 @@ function optionalEnvNumber(name: string, defaultValue: number): number {
   return value;
 }
 
+/** Centralized application configuration. Validated on startup — fails fast if required vars are missing. */
 export const config = {
   aprs: {
     callsign: requireEnv('CALLSIGN'),

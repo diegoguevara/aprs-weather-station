@@ -1,3 +1,7 @@
+/**
+ * Converts decimal degree coordinates to APRS position format.
+ * Lat: DDMM.MMN/S (e.g., "0445.34N"), Lon: DDDMM.MME/W (e.g., "07403.79W")
+ */
 export function latLonToAprs(
   lat: number,
   lon: number,
