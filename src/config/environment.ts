@@ -6,24 +6,43 @@ function requireEnv(name: string): string {
   return value;
 }
 
+function requireEnvNumber(name: string): number {
+  const value = Number(requireEnv(name));
+  if (isNaN(value)) {
+    throw new Error(`Environment variable ${name} must be a valid number`);
+  }
+  return value;
+}
+
+function optionalEnvNumber(name: string, defaultValue: number): number {
+  const raw = process.env[name];
+  if (!raw) return defaultValue;
+  const value = Number(raw);
+  if (isNaN(value)) {
+    throw new Error(`Environment variable ${name} must be a valid number`);
+  }
+  return value;
+}
+
 export const config = {
   aprs: {
     callsign: requireEnv('CALLSIGN'),
     ssid: requireEnv('SSID'),
     passcode: requireEnv('PASSCODE'),
     server: requireEnv('SERVER'),
-    port: requireEnv('PORT'),
+    port: requireEnvNumber('PORT'),
   },
   location: {
-    lat: parseFloat(requireEnv('LAT')),
-    lon: parseFloat(requireEnv('LON')),
+    lat: requireEnvNumber('LAT'),
+    lon: requireEnvNumber('LON'),
   },
   openweather: {
     apiKey: requireEnv('OPEN_WEATHER_API_KEY'),
+    dailyLimit: optionalEnvNumber('DAILY_API_LIMIT', 900),
   },
   app: {
     comment: process.env.COMMENT ?? '',
     timezone: process.env.TIMEZONE ?? 'America/Bogota',
-    intervalMs: 1000 * 60 * 5,
+    intervalMs: optionalEnvNumber('INTERVAL_MINUTES', 10) * 60 * 1000,
   },
 };

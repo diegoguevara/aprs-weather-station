@@ -7,21 +7,14 @@
     "sourceMap": true,
     "target": "es2021",
     "outDir": "./dist",
-    // "baseUrl": "./src",
-    "experimentalDecorators": true,
     "strict": true,
-    "esModuleInterop": true,
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "esModuleInterop": true
   },
   "ts-node": {
     "files": true,
     "transpileOnly": true,
     "typeCheck": false
   },
-  "include": [
-    "src/**/*.ts",
-    "src/types/express/index.old",
-    "contabble-credentials.json"
-  ],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "src/**/*.spec.ts"]
 }

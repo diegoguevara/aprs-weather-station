@@ -6,7 +6,7 @@ interface AprsConnectionConfig {
   ssid: string;
   passcode: string;
   server: string;
-  port: string;
+  port: number;
   lat: number;
   lon: number;
 }
@@ -38,7 +38,7 @@ export default class AprsConnection {
       const filter = `r/${lat}/${lon}/100`;
       let settled = false;
 
-      this.client = net.createConnection(parseInt(port), server);
+      this.client = net.createConnection(port, server);
 
       let loginBuffer = '';
 

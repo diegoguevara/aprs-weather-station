@@ -17,10 +17,10 @@ export interface OWDataHourlyItem {
   visibility: number;
   wind_speed: number;
   wind_deg: number;
-  wind_gust: number;
-  weather: [OWDataItemWeather];
+  wind_gust?: number;
+  weather: OWDataItemWeather[];
   pop: number;
-  rain: {
+  rain?: {
     '1h': number;
   };
 }
@@ -39,12 +39,12 @@ export interface OWDataItem {
   visibility: number;
   wind_speed: number;
   wind_deg: number;
-  wind_gust: number;
-  pop: number;
-  rain: {
+  wind_gust?: number;
+  pop?: number;
+  rain?: {
     '1h': number;
   };
-  weather: [OWDataItemWeather];
+  weather: OWDataItemWeather[];
 }
 
 export interface OWDataDailyItem {
@@ -61,8 +61,8 @@ export interface OWDataDailyItem {
   visibility: number;
   wind_speed: number;
   wind_deg: number;
-  wind_gust: number;
-  weather: [OWDataItemWeather];
+  wind_gust?: number;
+  weather: OWDataItemWeather[];
 }
 
 export interface OWData {

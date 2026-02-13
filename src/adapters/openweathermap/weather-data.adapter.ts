@@ -17,6 +17,15 @@ dayjs.extend(isToday);
 
 const MM_TO_HUNDREDTHS_INCH = 100 / 25.4;
 
+function toAscii(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ñ/g, 'n')
+    .replace(/Ñ/g, 'N')
+    .replace(/[^\x20-\x7E]/g, '');
+}
+
 function oneDecimal(value: number): number {
   return parseFloat(value.toFixed(1));
 }
@@ -26,7 +35,7 @@ export function transformToAprsData(
   tz: string,
 ): AprsWeatherDataType {
   try {
-    const orderedItems = weatherData.hourly.sort(
+    const orderedItems = [...weatherData.hourly].sort(
       (a: { dt: number }, b: { dt: number }) => a.dt - b.dt,
     );
 
@@ -49,7 +58,7 @@ export function transformToAprsData(
       }
 
       if (itemDate.isAfter(dayjs().tz(tz).subtract(1, 'hour'))) {
-        if (itm.pop! > 0.2 && itm.rain?.['1h']) {
+        if (itm.pop > 0.2 && itm.rain?.['1h']) {
           if (!nextRainItem) {
             nextRainItem = itm;
           }
@@ -64,7 +73,9 @@ export function transformToAprsData(
     });
 
     const windDirection = Math.round(weatherData.current.wind_deg ?? 0);
-    const weather = weatherData.current?.weather?.[0].description ?? '';
+    const weather = toAscii(
+      weatherData.current?.weather?.[0]?.description ?? '',
+    );
     const windSpeed = Math.round(weatherData.current.wind_speed ?? 0);
     const windGust = Math.round(weatherData.current.wind_gust ?? 0);
     const temperature = Math.round(weatherData.current.temp ?? 0);
@@ -86,13 +97,15 @@ export function transformToAprsData(
     let rainDesc = '';
     if (nextRainItem) {
       rainDesc = '- ';
-      rainDesc += (nextRainItem as OWDataItem).weather?.[0].description ?? '';
+      rainDesc += toAscii(
+        (nextRainItem as OWDataItem).weather?.[0]?.description ?? '',
+      );
       const dd = nextRainItem as OWDataItem;
       const rainTime = dayjs.unix(dd?.dt ?? 0).tz(tz);
       if (rainTime.isToday()) {
         rainDesc += ' hoy ';
       } else {
-        rainDesc += ' mañana ';
+        rainDesc += ' manana ';
       }
       rainDesc += rainTime.format('h:mma');
       rainDesc += ` (~${dd.rain?.['1h']}mm/h)`;
