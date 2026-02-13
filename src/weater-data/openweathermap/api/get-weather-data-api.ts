@@ -28,7 +28,8 @@ class GetWeatherDataApi {
       const response = await fetch(url);
       const data = await response.json();
       return data;
-    } catch {
+    } catch (error) {
+      console.log(error)
       throw new Error('Error getting OpenWeatherMap data');
     }
   }
