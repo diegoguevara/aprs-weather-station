@@ -23,6 +23,7 @@ export const config = {
   },
   app: {
     comment: process.env.COMMENT ?? '',
+    timezone: process.env.TIMEZONE ?? 'America/Bogota',
     intervalMs: 1000 * 60 * 5,
   },
 };

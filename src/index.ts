@@ -1,22 +1,31 @@
 import { config } from './config/environment';
-import {
-  buildWeatherPacket,
-  buildMessagePacket,
-  connectToAprs,
-  sendPacket,
-} from './aprs';
+import { buildWeatherPacket, buildMessagePacket, AprsConnection } from './aprs';
 import { transformToAprsData } from './adapters/openweathermap/weather-data.adapter';
 import WeatherData from './weather-data/openweathermap';
-import { delay } from './utils/delay';
 import logger from './utils/logger';
 import dayjs from 'dayjs';
 
 const { aprs, location, openweather, app } = config;
 
+const connection = new AprsConnection({
+  callsign: aprs.callsign,
+  ssid: aprs.ssid,
+  passcode: aprs.passcode,
+  server: aprs.server,
+  port: aprs.port,
+  lat: location.lat,
+  lon: location.lon,
+});
+
 let intervalId: NodeJS.Timeout;
 
-async function main() {
+async function sendReport() {
   try {
+    if (!connection.isConnected()) {
+      logger.warn('Skipping report: not connected');
+      return;
+    }
+
     const weatherData = await new WeatherData({
       lat: location.lat,
       lon: location.lon,
@@ -25,7 +34,7 @@ async function main() {
       lang: 'es',
     }).getWeatherData();
 
-    const aprsWeatherData = transformToAprsData(weatherData);
+    const aprsWeatherData = transformToAprsData(weatherData, app.timezone);
 
     const tempCelsius = parseFloat(
       ((aprsWeatherData.temperature - 32) * (5 / 9)).toFixed(1),
@@ -37,43 +46,23 @@ async function main() {
       lat: location.lat,
       lon: location.lon,
       weatherData: aprsWeatherData,
-      comment: `Condiciones actuales: ${aprsWeatherData.weather} - UV: ${aprsWeatherData.uvi ?? 0} - Nubes: ${aprsWeatherData.clouds}% - Temperatura: ${tempCelsius}ºC - Precipitación: ${aprsWeatherData.rainfallLastHour}mm/h - ${aprsWeatherData.rainDesc}`,
+      comment: `Condiciones actuales: ${aprsWeatherData.weather} - UV: ${aprsWeatherData.uvi ?? 0} - Nubes: ${aprsWeatherData.clouds}% - Temperatura: ${tempCelsius}ºC - Precipitacion: ${aprsWeatherData.rainfallLastHourMm}mm/h - ${aprsWeatherData.rainDesc}`,
     });
-
-    let commentPacket = '';
-    if (app.comment) {
-      commentPacket =
-        buildMessagePacket({
-          callsign: aprs.callsign,
-          ssid: aprs.ssid,
-          comment: app.comment,
-        }) ?? '';
-    }
-
-    const conn = await connectToAprs({
-      callsign: aprs.callsign,
-      ssid: aprs.ssid,
-      passcode: aprs.passcode,
-      server: aprs.server,
-      port: aprs.port,
-      lat: location.lat,
-      lon: location.lon,
-    });
-
-    conn.on('data', (data) => {
-      logger.debug(`Received: ${data}`);
-    });
-
-    await delay(2000);
 
     if (weatherPacket) {
-      sendPacket(conn, weatherPacket);
-    }
-    if (commentPacket) {
-      sendPacket(conn, commentPacket);
+      connection.send(weatherPacket);
     }
 
-    conn.end();
+    if (app.comment) {
+      const commentPacket = buildMessagePacket({
+        callsign: aprs.callsign,
+        ssid: aprs.ssid,
+        comment: app.comment,
+      });
+      if (commentPacket) {
+        connection.send(commentPacket);
+      }
+    }
 
     logger.info('Report sent', {
       temperature: tempCelsius,
@@ -88,15 +77,22 @@ async function main() {
 function shutdown() {
   logger.info('Shutting down...');
   clearInterval(intervalId);
+  connection.disconnect();
   process.exit(0);
 }
 
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 
-(() => {
-  main();
-  intervalId = setInterval(() => {
-    main();
-  }, app.intervalMs);
+(async () => {
+  try {
+    await connection.connect();
+    sendReport();
+    intervalId = setInterval(() => {
+      sendReport();
+    }, app.intervalMs);
+  } catch (error) {
+    logger.error('Failed to start', { error: (error as Error).message });
+    process.exit(1);
+  }
 })();

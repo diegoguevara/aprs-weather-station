@@ -13,4 +13,5 @@ export interface AprsWeatherDataType {
   visibility: number;
   weather: string;
   rainDesc: string;
+  rainfallLastHourMm: number;
 }
