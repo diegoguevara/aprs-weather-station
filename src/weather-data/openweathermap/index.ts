@@ -1,4 +1,4 @@
-import GetWeatherDataApi from './api/get-weather-data-api';
+import GetWeatherDataApi from './api/get-weather-data.api';
 
 class WeatherData {
   constructor(
@@ -13,9 +13,9 @@ class WeatherData {
 
   async getWeatherData() {
     const { lat, lon, apikey, units, lang } = this.params;
-    return new GetWeatherDataApi(apikey as string, {
-      units: units ?? 'imperial', // imperial units are required for aprs service
-      lang: lang ?? 'en', // language of the weather description text
+    return new GetWeatherDataApi(apikey, {
+      units: units ?? 'imperial',
+      lang: lang ?? 'en',
     }).getWeatherData(lat, lon);
   }
 }

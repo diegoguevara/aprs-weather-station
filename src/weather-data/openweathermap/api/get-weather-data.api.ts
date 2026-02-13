@@ -1,9 +1,10 @@
+import logger from '../../../utils/logger';
+
 export interface GetWeatherDataOptions {
   units?: string;
   lang?: string;
 }
 
-// OpenWeather API URL
 const API_URL = 'https://api.openweathermap.org/data/3.0/onecall';
 
 class GetWeatherDataApi {
@@ -26,10 +27,15 @@ class GetWeatherDataApi {
       const url = `${API_URL}?lat=${lat}&lon=${lon}&appid=${key}&units=${units}&lang=${lang}`;
 
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(
+          `OpenWeatherMap API returned ${response.status}: ${response.statusText}`,
+        );
+      }
       const data = await response.json();
       return data;
     } catch (error) {
-      console.log(error)
+      logger.error('Error getting OpenWeatherMap data', { error });
       throw new Error('Error getting OpenWeatherMap data');
     }
   }

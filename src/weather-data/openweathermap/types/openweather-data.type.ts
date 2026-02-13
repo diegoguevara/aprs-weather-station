@@ -67,40 +67,6 @@ export interface OWDataDailyItem {
 
 export interface OWData {
   current: OWDataItem;
-  hourly: [OWDataHourlyItem];
-  daily: [
-    OWDataDailyItem,
-    // {
-    //   dt: 1731969056,
-    //   sunrise: 1731926692,
-    //   sunset: 1731969511,
-    //   temp: {
-    //     day: 61.03,
-    //     min: 60.46,
-    //     max: 61.03,
-    //     night: 60.46,
-    //     eve: 61.03,
-    //     morn: 60.46
-    //   },
-    //   feels_like: {
-    //     day: 60.46,
-    //     night: 60.46,
-    //     eve: 60.46,
-    //     morn: 60.46
-    //   },
-    //   pressure: 1013,
-    //   humidity: 77,
-    //   dew_point: 53.78,
-    //   wind_speed: 13,
-    //   wind_deg: 280,
-    //   wind_gust: 0,
-    //   weather: [
-    //     OWDataItemWeather
-    //   ],
-    //   clouds: 40,
-    //   pop: 0,
-    //   rain: 0,
-    //   uvi: 0
-    // }
-  ];
+  hourly: OWDataHourlyItem[];
+  daily: OWDataDailyItem[];
 }

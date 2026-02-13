@@ -1,106 +1,102 @@
-import { MessagePacket, WeatherPacket } from './aprs-packet';
-
-import AprsConnection from './aprs-packet/service/connect';
-import SendPacket from './aprs-packet/service/send-packet';
-import WeatherData from './weater-data/openweathermap';
-import WeatherDataAdapter from './adapters/openweathermap/weather-data.adapter';
+import { config } from './config/environment';
+import {
+  buildWeatherPacket,
+  buildMessagePacket,
+  connectToAprs,
+  sendPacket,
+} from './aprs';
+import { transformToAprsData } from './adapters/openweathermap/weather-data.adapter';
+import WeatherData from './weather-data/openweathermap';
+import { delay } from './utils/delay';
+import logger from './utils/logger';
 import dayjs from 'dayjs';
-import logger from './helper/logger.helper';
 
-const callsign = process.env.CALLSIGN ?? '';
-const ssid = process.env.SSID ?? '';
-const passcode = process.env.PASSCODE ?? '';
-const server = process.env.SERVER ?? '';
-const port = process.env.PORT ?? '';
-const lat = parseFloat(process.env.LAT?.toString() ?? '0');
-const lon = parseFloat(process.env.LON?.toString() ?? '0');
-const comment = process.env.COMMENT ?? '';
+const { aprs, location, openweather, app } = config;
 
-const apikey = process.env.OPEN_WEATHER_API_KEY ?? '';
+let intervalId: NodeJS.Timeout;
 
 async function main() {
   try {
-    // get weather data
     const weatherData = await new WeatherData({
-      lat,
-      lon,
-      apikey,
-      units: 'imperial', // mandatory for aprs service
+      lat: location.lat,
+      lon: location.lon,
+      apikey: openweather.apiKey,
+      units: 'imperial',
       lang: 'es',
     }).getWeatherData();
 
-    // transform weather data to aprs format
-    const aprsWeatherData = WeatherDataAdapter.getAprsData(weatherData);
+    const aprsWeatherData = transformToAprsData(weatherData);
 
-    const t = (aprsWeatherData.temperature - 32) * (5 / 9);
-    const temperature = parseFloat(t.toFixed(1));
-    console.log('temperature', temperature);
-    console.log('weatherData', aprsWeatherData.temperature);
+    const tempCelsius = parseFloat(
+      ((aprsWeatherData.temperature - 32) * (5 / 9)).toFixed(1),
+    );
 
-    // build aprs weather packet
-    const weatherPacket = WeatherPacket.build({
-      callsign,
-      ssid,
-      lat,
-      lon,
+    const weatherPacket = buildWeatherPacket({
+      callsign: aprs.callsign,
+      ssid: aprs.ssid,
+      lat: location.lat,
+      lon: location.lon,
       weatherData: aprsWeatherData,
-      comment: `Condiciones actuales: ${aprsWeatherData.weather} - UV: ${aprsWeatherData.uvi ?? 0} - Nubes: ${aprsWeatherData.clouds}% - Temperatura: ${temperature}ºC - Precipitación: ${aprsWeatherData.rainfallLastHour}mm/h - ${aprsWeatherData.rainDesc}`,
+      comment: `Condiciones actuales: ${aprsWeatherData.weather} - UV: ${aprsWeatherData.uvi ?? 0} - Nubes: ${aprsWeatherData.clouds}% - Temperatura: ${tempCelsius}ºC - Precipitación: ${aprsWeatherData.rainfallLastHour}mm/h - ${aprsWeatherData.rainDesc}`,
     });
 
     let commentPacket = '';
-    if (comment) {
+    if (app.comment) {
       commentPacket =
-        MessagePacket.build({
-          callsign,
-          ssid,
-          comment,
+        buildMessagePacket({
+          callsign: aprs.callsign,
+          ssid: aprs.ssid,
+          comment: app.comment,
         }) ?? '';
     }
 
-    const aprsConn = await new AprsConnection({
-      callsign,
-      ssid,
-      passcode,
-      server,
-      port,
-      lat,
-      lon,
-    }).connect();
-
-    aprsConn.on('data', (data) => {
-      console.log(`Received: ${data}`);
+    const conn = await connectToAprs({
+      callsign: aprs.callsign,
+      ssid: aprs.ssid,
+      passcode: aprs.passcode,
+      server: aprs.server,
+      port: aprs.port,
+      lat: location.lat,
+      lon: location.lon,
     });
 
-    await waitOneSecond();
+    conn.on('data', (data) => {
+      logger.debug(`Received: ${data}`);
+    });
+
+    await delay(2000);
 
     if (weatherPacket) {
-      await SendPacket.send(aprsConn, weatherPacket);
+      sendPacket(conn, weatherPacket);
     }
     if (commentPacket) {
-      await SendPacket.send(aprsConn, commentPacket);
+      sendPacket(conn, commentPacket);
     }
 
-    aprsConn.end();
-    console.log(aprsWeatherData);
-    console.log('last report', dayjs().format('MM.D, h:mm:ss a'));
+    conn.end();
+
+    logger.info('Report sent', {
+      temperature: tempCelsius,
+      time: dayjs().format('MM.D, h:mm:ss a'),
+    });
   } catch (error) {
     const err = error as Error;
     logger.error(err.message);
   }
 }
 
-function waitOneSecond(): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, 2000);
-  });
+function shutdown() {
+  logger.info('Shutting down...');
+  clearInterval(intervalId);
+  process.exit(0);
 }
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
 
 (() => {
   main();
-  setInterval(
-    () => {
-      main();
-    },
-    1000 * 60 * 5, // every 5 minutes
-  );
+  intervalId = setInterval(() => {
+    main();
+  }, app.intervalMs);
 })();
