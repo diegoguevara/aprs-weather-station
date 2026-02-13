@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "pretty": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "target": "es2021",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true
+  },
+  "ts-node": {
+    "files": true,
+    "transpileOnly": true,
+    "typeCheck": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "src/**/*.spec.ts"]
+}
