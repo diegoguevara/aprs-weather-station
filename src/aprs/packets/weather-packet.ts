@@ -57,7 +57,7 @@ export function buildWeatherPacket({
     const { latString, lonString } = latLonToAprs(lat, lon);
 
     return (
-      `${paddedCallsign}>APZDGW,TCPIP*:!${latString}${symbolTable}${lonString}${symbolCode}` +
+      `${paddedCallsign}>APDAGW,TCPIP*:!${latString}${symbolTable}${lonString}${symbolCode}` +
       `${windDir}/${windSpd}g${windGst}t${temp}r${rainLastHour}p${rain24Hrs}P${rainMidnight}` +
       `h${humid}b${baroPressure}${comment}`
     );

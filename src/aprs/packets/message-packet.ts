@@ -22,13 +22,13 @@ export function buildMessagePacket({
   try {
     const paddedCallsign = `${callsign}-${ssid}`.padEnd(9, ' ');
 
-    let aprsMessage = `${paddedCallsign}>APZDGW,TCPIP*:>${comment}`;
+    let aprsMessage = `${paddedCallsign}>APDAGW,TCPIP*:>${comment}`;
 
     if (lat && lon) {
       const symbolTable = '/';
       const symbolCode = '#';
       const { latString, lonString } = latLonToAprs(lat, lon);
-      aprsMessage = `${paddedCallsign}>APZDGW,TCPIP*:!${latString}${symbolTable}${lonString}${symbolCode}${comment}`;
+      aprsMessage = `${paddedCallsign}>APDAGW,TCPIP*:!${latString}${symbolTable}${lonString}${symbolCode}${comment}`;
     }
 
     return aprsMessage;
