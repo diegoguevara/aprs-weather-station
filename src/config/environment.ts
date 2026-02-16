@@ -1,3 +1,5 @@
+import { Language } from '../i18n/translations';
+
 /** Reads a required env var or throws if missing. */
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -47,6 +49,7 @@ export const config = {
   app: {
     comment: process.env.COMMENT ?? '',
     timezone: process.env.TIMEZONE ?? 'America/Bogota',
+    language: (process.env.LANGUAGE ?? 'es') as Language,
     intervalMs: optionalEnvNumber('INTERVAL_MINUTES', 10) * 60 * 1000,
   },
 };

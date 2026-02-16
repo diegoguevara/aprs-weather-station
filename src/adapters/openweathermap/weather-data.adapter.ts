@@ -5,6 +5,7 @@ import {
 } from '../../weather-data/openweathermap/types/openweather-data.type';
 
 import { AprsWeatherDataType } from '../../aprs/types/aprs-weather-data.type';
+import { Language, t } from '../../i18n/translations';
 import dayjs from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
 import logger from '../../utils/logger';
@@ -44,6 +45,7 @@ function oneDecimal(value: number): number {
 export function transformToAprsData(
   weatherData: OWData,
   tz: string,
+  lang: Language,
 ): AprsWeatherDataType {
   try {
     const orderedItems = [...weatherData.hourly].sort(
@@ -114,9 +116,9 @@ export function transformToAprsData(
       const dd = nextRainItem as OWDataItem;
       const rainTime = dayjs.unix(dd?.dt ?? 0).tz(tz);
       if (rainTime.isToday()) {
-        rainDesc += ' hoy ';
+        rainDesc += ` ${t(lang).today} `;
       } else {
-        rainDesc += ' manana ';
+        rainDesc += ` ${t(lang).tomorrow} `;
       }
       rainDesc += rainTime.format('h:mma');
       rainDesc += ` (~${dd.rain?.['1h']}mm/h)`;

@@ -2,6 +2,7 @@ import { config } from './config/environment';
 import { buildWeatherPacket, buildMessagePacket, AprsConnection } from './aprs';
 import { transformToAprsData } from './adapters/openweathermap/weather-data.adapter';
 import { getWeatherData, RateLimitError } from './weather-data/openweathermap';
+import { t } from './i18n/translations';
 import logger from './utils/logger';
 import dayjs from 'dayjs';
 
@@ -78,7 +79,7 @@ async function sendReport() {
       lon: location.lon,
       apiKey: openweather.apiKey,
       units: 'imperial',
-      lang: 'es',
+      lang: app.language,
     });
 
     apiTracker.dailyCalls++;
@@ -89,7 +90,12 @@ async function sendReport() {
       limit: openweather.dailyLimit,
     });
 
-    const aprsWeatherData = transformToAprsData(weatherData, app.timezone);
+    const aprsWeatherData = transformToAprsData(
+      weatherData,
+      app.timezone,
+      app.language,
+    );
+    const i18n = t(app.language);
 
     const tempCelsius = parseFloat(
       ((aprsWeatherData.temperature - 32) * (5 / 9)).toFixed(1),
@@ -101,7 +107,7 @@ async function sendReport() {
       lat: location.lat,
       lon: location.lon,
       weatherData: aprsWeatherData,
-      comment: `Condiciones actuales: ${aprsWeatherData.weather} - UV: ${aprsWeatherData.uvi ?? 0} - Nubes: ${aprsWeatherData.clouds}% - Temperatura: ${tempCelsius}C - Precipitacion: ${aprsWeatherData.rainfallLastHourMm}mm/h - ${aprsWeatherData.rainDesc}`,
+      comment: `${aprsWeatherData.weather} UV:${aprsWeatherData.uvi ?? 0} ${i18n.clouds}:${aprsWeatherData.clouds}% ${i18n.temp}:${tempCelsius}C ${i18n.rain}:${aprsWeatherData.rainfallLastHourMm}mm/h ${aprsWeatherData.rainDesc}`,
     });
 
     if (weatherPacket) {
