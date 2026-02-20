@@ -20,7 +20,7 @@ export function buildMessagePacket({
   comment?: string;
 }): string | undefined {
   try {
-    const paddedCallsign = `${callsign}-${ssid}`.padEnd(9, ' ');
+    const paddedCallsign = `${callsign}-${ssid}`;
 
     let aprsMessage = `${paddedCallsign}>APDAGW,TCPIP*:>${comment}`;
 

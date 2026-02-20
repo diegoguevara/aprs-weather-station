@@ -35,7 +35,7 @@ export function buildWeatherPacket({
       pressure = 0,
     } = weatherData;
 
-    const paddedCallsign = `${callsign}-${ssid}`.padEnd(9, ' ');
+    const paddedCallsign = `${callsign}-${ssid}`;
     const symbolTable = '/';
     const symbolCode = '_';
 
