@@ -1,4 +1,5 @@
 import { Language } from '../i18n/translations';
+import packageJson from '../../package.json';
 
 /** Reads a required env var or throws if missing. */
 function requireEnv(name: string): string {
@@ -47,6 +48,7 @@ export const config = {
     dailyLimit: optionalEnvNumber('DAILY_API_LIMIT', 900),
   },
   app: {
+    version: packageJson.version,
     comment: process.env.COMMENT ?? '',
     timezone: process.env.TIMEZONE ?? 'America/Bogota',
     language: (process.env.LANGUAGE ?? 'es') as Language,

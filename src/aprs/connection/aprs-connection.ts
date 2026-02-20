@@ -9,6 +9,7 @@ interface AprsConnectionConfig {
   port: number;
   lat: number;
   lon: number;
+  version: string;
 }
 
 const RECONNECT_INTERVAL = 30000;
@@ -40,7 +41,7 @@ export default class AprsConnection {
     }
 
     return new Promise<void>((resolve, reject) => {
-      const { callsign, ssid, passcode, server, port, lat, lon } = this.params;
+      const { callsign, ssid, passcode, server, port, lat, lon, version } = this.params;
       const filter = `r/${lat}/${lon}/100`;
       let settled = false;
 
@@ -50,7 +51,7 @@ export default class AprsConnection {
 
       this.client.on('connect', () => {
         logger.info(`Connected to ${server}:${port}`);
-        const loginMessage = `user ${callsign}-${ssid} pass ${passcode} vers NodeJS-APRS-WX 2.0 filter ${filter}\n`;
+        const loginMessage = `user ${callsign}-${ssid} pass ${passcode} vers APDAGW ${version} filter ${filter}\n`;
         this.client!.write(loginMessage);
       });
 

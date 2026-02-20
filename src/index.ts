@@ -16,6 +16,7 @@ const connection = new AprsConnection({
   port: aprs.port,
   lat: location.lat,
   lon: location.lon,
+  version: app.version,
 });
 
 const startTime = Date.now();
